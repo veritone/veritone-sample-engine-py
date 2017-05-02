@@ -46,7 +46,9 @@ def run(payload_arg):
         transcript = get_transcript(transcript_asset['_uri'])
 
         encode_transcript(transcript)
-        return client.save_transcript(payload['recordingId'], transcript)
+        success = client.save_transcript(payload['recordingId'], transcript)
+        print(success)
+        return success
 
     return False
 

@@ -6,7 +6,7 @@ check: pylint pep8 test
 
 .PHONY: test
 test: ve
-	. ve/bin/activate && find test/unit -name test*.py | PYTHONPATH=. xargs -n 1 python
+	. ve/bin/activate && find test/unit -name test*.py | PYTHONPATH=. xargs -n 1 python3
 
 .PHONY: clean
 clean:
@@ -31,4 +31,4 @@ pep8: ve
 
 .PHONY: run
 run: ve
-	@. ve/bin/activate && python $(src_dir)/engine.py $$PAYLOAD
+	@. ve/bin/activate && python3 $(src_dir)/engine.py $$PAYLOAD
