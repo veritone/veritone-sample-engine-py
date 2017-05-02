@@ -9,6 +9,8 @@ API_PASSWD_ENV = "API_PASSWORD"
 API_TOKEN = "API_TOKEN"
 API_URL = "API_URL"
 
+VALID_TASK_STATUS = ['running', 'completed', 'failed']
+
 
 def get_transcript(uri):
     response = requests.get(uri)
@@ -74,6 +76,21 @@ class APIClient(object):
 
         url = urllib.parse.urljoin(self.url, 'recording/{}/asset'.format(recording_id))
         response = requests.post(url, headers=headers, data=content)
+        if response.status_code != 200:
+            print(response.status_code)
+            return False
+        return True
+
+    def update_task(self, job_id, task_id, status, output=None):
+        if status not in VALID_TASK_STATUS:
+            return False
+        body = {
+            'status': status,
+        }
+        if output is not None:
+            body['output'] = output
+        url = urllib.parse.urljoin(self.url, 'job/{}/task/{}'.format(job_id, task_id))
+        response = requests.put(url, headers=self.header, data=body)
         if response.status_code != 200:
             print(response.status_code)
             return False

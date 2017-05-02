@@ -40,7 +40,10 @@ def run(payload_arg):
 
         if 'transcriptAsset' not in recording:
             print('Error: transcriptAsset not found')
+            client.update_task(payload['jobId'], payload['taskId'], 'failed')
             return False
+
+        client.update_task(payload['jobId'], payload['taskId'], 'running')
 
         transcript_asset = recording['transcriptAsset']
         transcript = get_transcript(transcript_asset['_uri'])
@@ -48,6 +51,10 @@ def run(payload_arg):
         encode_transcript(transcript)
         success = client.save_transcript(payload['recordingId'], transcript)
         print(success)
+        if not success:
+            client.update_task(payload['jobId'], payload['taskId'], 'failed')
+        else:
+            client.update_task(payload['jobId'], payload['taskId'], 'complete')
         return success
 
     return False
