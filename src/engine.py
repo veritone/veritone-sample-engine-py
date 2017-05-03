@@ -38,8 +38,8 @@ def run(payload_arg):
         payload = load_payload(payload_file.read())
         recording = client.get_recording(payload['recordingId'])
 
-        if 'transcriptAsset' not in recording:
-            print('Error: transcriptAsset not found')
+        if recording is None or 'transcriptAsset' not in recording:
+            print('Error loading transcript asset from recording')
             client.update_task(payload['jobId'], payload['taskId'], 'failed')
             return False
 

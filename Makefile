@@ -29,6 +29,13 @@ pylint: ve
 pep8: ve
 	. ve/bin/activate && find $(lintable) -name *.py | xargs pep8 --max-line-length=100
 
+ifeq (run,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "run"
+  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(RUN_ARGS):;@:)
+endif
+
 .PHONY: run
 run: ve
-	@. ve/bin/activate && python3 $(src_dir)/engine.py $$PAYLOAD
+	@. ve/bin/activate && python3 $(src_dir)/engine.py $(RUN_ARGS)
