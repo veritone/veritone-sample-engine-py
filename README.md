@@ -20,7 +20,7 @@ Please see `src/api.py` for examples on how to use these environment variables a
 
 ## Input/Output
 
-The engine can expect a single argument when run - the location of a payloads doc. A sample payload can be found in `test/payload.json`. The engine should then use the API to retrieve the relevant asset(s) for its task.
+The engine can expect a payload argument when run - the location of a payloads doc. This argument can be passed on command line or through an environment variable - `PAYLOAD_FILE`. A sample payload can be found in `test/payload.json`. The engine should then use the API to retrieve the relevant asset(s) for its task.
 
 When completed, the engine should use the API to submit its result.
 
