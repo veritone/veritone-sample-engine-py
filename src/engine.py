@@ -1,14 +1,13 @@
 import sys
+import os
 import json
+import argparse
 
 from api import APIClient, get_transcript
 from translator import encode_morse
 
 PAYLOAD_REQUIRED_FIELDS = ['applicationId', 'jobId', 'taskId', 'recordingId']
-
-
-def usage():
-    print('Usage: python engine.py [payload]')
+PAYLOAD_ENV = 'PAYLOAD_FILE'
 
 
 def load_payload(payload_raw):
@@ -61,9 +60,16 @@ def run(payload_arg):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        usage()
+    parser = argparse.ArgumentParser(description='Veritone Developer sample python engine - Morse encoder')
+    parser.add_argument('-payload', type=str)
+    args = parser.parse_args()
+    payload = vars(args).get('payload', '')
+    if os.getenv(PAYLOAD_ENV) is not None:
+        payload = os.getenv(PAYLOAD_ENV)
+
+    if payload is None:
+        parser.print_help()
         sys.exit(1)
 
-    if not run(sys.argv[1]):
+    if not run(payload):
         sys.exit(1)
