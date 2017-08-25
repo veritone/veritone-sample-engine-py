@@ -37,12 +37,24 @@ export API_TOKEN="<insert_api_token>"
 export API_URL="https://api.aws-dev.veritone.com/v1/"
 ```
 
-### Build
+Tip: You can make an environment file for testing locally, just copy the lines above into a file, eg. `export_env.sh`.
+
+### Install Dependencies
+
 ```
-docker build -t derek-super-test-825 .
+make ve
 ```
 
 ### Run
+
+If you have a local environment export file:
+
 ```
 source export_env.sh; PAYLOAD_FILE=test/payload.json make run
+```
+
+If not, you can export manually and then run:
+
+```
+PAYLOAD_FILE=test/payload.json make run
 ```
