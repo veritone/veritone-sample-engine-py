@@ -96,7 +96,9 @@ class APIClient(object):
             body['output'] = output
         url = urllib.parse.urljoin(self.url, 'job/{}/task/{}'.format(job_id, task_id))
         response = requests.put(url, headers=headers, data=json.dumps(body))
-        if response.status_code != 200:
+        if response.status_code != 204:
             print(response.text)
+            print(response.status_code)
             return False
+
         return True

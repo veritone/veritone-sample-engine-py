@@ -50,9 +50,12 @@ def run(payload_arg):
         encode_transcript(transcript)
         success = client.save_transcript(payload['recordingId'], transcript)
         if not success:
-            resp = client.update_task(payload['jobId'], payload['taskId'], 'failed')
+            update_task_success = client.update_task(payload['jobId'], payload['taskId'], 'failed')
         else:
-            resp = client.update_task(payload['jobId'], payload['taskId'], 'complete')
+            update_task_success = client.update_task(payload['jobId'], payload['taskId'], 'complete')
+
+        if not update_task_success:
+            print('Failed to update task')
 
         return success
 
