@@ -70,7 +70,7 @@ class APIClient(object):
 
         headers = {
             'X-Veritone-Asset-Type': 'morse',
-            'Content-type': 'application/ttml+xml',
+            'Content-Type': 'application/ttml+xml',
             'Authorization': 'Bearer %s' % self.token,
         }
 
@@ -85,13 +85,18 @@ class APIClient(object):
         if status not in VALID_TASK_STATUS:
             return False
         body = {
-            'status': status,
+            'taskStatus': status,
+        }
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer %s' % self.token,
         }
         if output is not None:
             body['output'] = output
         url = urllib.parse.urljoin(self.url, 'job/{}/task/{}'.format(job_id, task_id))
-        response = requests.put(url, headers=self.header, data=body)
+        response = requests.put(url, headers=headers, data=json.dumps(body))
         if response.status_code != 200:
-            print(response.status_code)
+            print(response.text)
             return False
         return True

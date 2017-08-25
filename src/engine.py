@@ -49,11 +49,11 @@ def run(payload_arg):
 
         encode_transcript(transcript)
         success = client.save_transcript(payload['recordingId'], transcript)
-        print(success)
         if not success:
-            client.update_task(payload['jobId'], payload['taskId'], 'failed')
+            resp = client.update_task(payload['jobId'], payload['taskId'], 'failed')
         else:
-            client.update_task(payload['jobId'], payload['taskId'], 'complete')
+            resp = client.update_task(payload['jobId'], payload['taskId'], 'complete')
+
         return success
 
     return False
@@ -71,5 +71,8 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-    if not run(payload):
+    if run(payload):
+        print('Successfully ran engine!')
+        sys.exit(0)
+    else:
         sys.exit(1)

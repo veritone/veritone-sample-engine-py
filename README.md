@@ -25,3 +25,24 @@ The engine can expect a payload argument when run - the location of a payloads d
 When completed, the engine should use the API to submit its result.
 
 While running, the engine can call the API to report on task status. Valid statuses are: `running`, `completed`, `failed`.
+
+## Running Locally
+
+### Export Environment
+
+```
+export API_USER_ENV="<insert_username>"
+export API_PASSWD_ENV="<insert_password>"
+export API_TOKEN="<insert_api_token>"
+export API_URL="https://api.aws-dev.veritone.com/v1/"
+```
+
+### Build
+```
+docker build -t derek-super-test-825 .
+```
+
+### Run
+```
+source export_env.sh; PAYLOAD_FILE=test/payload.json make run
+```
