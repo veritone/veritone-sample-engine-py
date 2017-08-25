@@ -9,7 +9,6 @@ from translator import encode_morse
 PAYLOAD_REQUIRED_FIELDS = ['applicationId', 'jobId', 'taskId', 'recordingId']
 PAYLOAD_ENV = 'PAYLOAD_FILE'
 
-
 def load_payload(payload_raw):
     try:
         loaded = json.loads(payload_raw)
