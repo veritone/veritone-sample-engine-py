@@ -9,7 +9,7 @@ API_PASSWD_ENV = "API_PASSWORD"
 API_TOKEN = "API_TOKEN"
 API_URL = "API_URL"
 
-VALID_TASK_STATUS = ['running', 'completed', 'failed']
+VALID_TASK_STATUS = ['running', 'complete', 'failed']
 
 
 def get_transcript(uri):
@@ -97,6 +97,7 @@ class APIClient(object):
         url = urllib.parse.urljoin(self.url, 'job/{}/task/{}'.format(job_id, task_id))
         response = requests.put(url, headers=headers, data=json.dumps(body))
         if response.status_code != 204:
+            print('Failed to update task to {}'.format(status))
             print(response.text)
             print(response.status_code)
             return False
