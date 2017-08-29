@@ -4,23 +4,13 @@ This project demonstrates how to create an engine using Python for running on Ve
 
 ## API Usage
 
-All communication with Veritone should be done using the Veritone API. The engine can expect several environment variables to be set for engine access:
+All communication with Veritone should be done using the Veritone API. The engine can expect to be passed an API token in the `payload.json` file which is provided via the `PAYLOAD_FILE` environment variable during an engine run.
 
-```
-API_URL: where to find API
-API_TOKEN: authorization token to use on API requests
-
-API_USERNAME: API username
-API_PASSWORD: API password
-
-if API_TOKEN is not set, then use username/password to login to API, and get a token from the login result.
-```
-
-Please see `src/api.py` for examples on how to use these environment variables and make API calls.
+Please see `src/api.py` for examples on how to make Veritone API calls.
 
 ## Input/Output
 
-The engine can expect a payload argument when run - the location of a payloads doc. This argument can be passed on command line or through an environment variable - `PAYLOAD_FILE`. A sample payload can be found in `test/payload.json`. The engine should then use the API to retrieve the relevant asset(s) for its task.
+The engine can expect a `-payload` argument when run - the location of a payload file. This argument can be passed on command line or through the `PAYLOAD_FILE` environment variable. The command line argument is provided solely for convenience - when an engine is deployed to Veritone, payloads are passed using the environment variable. A sample payload can be found in `test/payload.json`. The engine should then use the API to retrieve the relevant asset(s) for its task.
 
 When completed, the engine should use the API to submit its result.
 
@@ -28,16 +18,9 @@ While running, the engine can call the API to report on task status. Valid statu
 
 ## Running Locally
 
-### Export Environment
+### Get API Token
 
-```
-export API_USER_ENV="<insert_username>"
-export API_PASSWD_ENV="<insert_password>"
-export API_TOKEN="<insert_api_token>"
-export API_URL="https://api.aws-dev.veritone.com/v1/"
-```
-
-Tip: You can make an environment file for testing locally, just copy the lines above into a file, eg. `export_env.sh`.
+Please read [Get a User Session or API Token](https://veritone-developer.atlassian.net/wiki/spaces/DOC/pages/13959365/Get+a+User+Session+or+API+Token) in our documentation to get an API token to test your engine with. Once you have a token, include it in your test `payload.json` using the key `token`.
 
 ### Install Dependencies
 
@@ -46,14 +29,6 @@ make ve
 ```
 
 ### Run
-
-If you have a local environment export file:
-
-```
-source export_env.sh; PAYLOAD_FILE=test/payload.json make run
-```
-
-If not, you can export manually and then run:
 
 ```
 PAYLOAD_FILE=test/payload.json make run

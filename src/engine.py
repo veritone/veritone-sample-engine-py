@@ -30,12 +30,11 @@ def encode_transcript(transcript):
 
 
 def run(payload_arg):
-    client = APIClient()
-
     with open(payload_arg, 'r') as payload_file:
         payload = load_payload(payload_file.read())
-        recording = client.get_recording(payload['recordingId'])
+        client = APIClient(payload['token'])
 
+        recording = client.get_recording(payload['recordingId'])
         if recording is None or 'transcriptAsset' not in recording:
             print('Error loading transcript asset from recording')
             client.update_task(payload['jobId'], payload['taskId'], 'failed')
