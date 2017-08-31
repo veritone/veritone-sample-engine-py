@@ -7,6 +7,8 @@
 	"outputFormats": [
 			"application/ttml+xml"
 	],
-	"concurrency": 2,
+	"clusterSize": "small",
+	"intialConcurrency": 50,
+	"maxConcurrency": 50,
 	"isPublic": true
 }
