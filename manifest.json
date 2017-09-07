@@ -9,6 +9,5 @@
 	],
 	"clusterSize": "small",
 	"intialConcurrency": 50,
-	"maxConcurrency": 50,
-	"isPublic": true
+	"maxConcurrency": 50
 }
