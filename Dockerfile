@@ -7,4 +7,4 @@ RUN apk add --update build-base python3-dev && \
 	pip3 install virtualenv && \
 	pip3 install -r requirements.txt
 
-ENTRYPOINT ["make run"]
+ENTRYPOINT ["make", "run"]

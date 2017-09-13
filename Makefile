@@ -1,5 +1,6 @@
 python_version := 3.6
 src_dir := src
+lintable := $(src_dir) test
 
 .PHONY: check
 check: pylint pep8 test
@@ -16,18 +17,18 @@ ve:
 	virtualenv $@ --python=python$(python_version)
 	. ./$@/bin/activate && pip$(python_version) install -r requirements.txt
 
+.PHONY: repl
 repl:
 	. ve/bin/activate && python
 
-lintable := $(src_dir) test
-
 .PHONY: pylint
 pylint: ve
-	. ve/bin/activate && find $(lintable) -name *.py | xargs pylint --rcfile ./.pylintrc -d missing-docstring
+	. ve/bin/activate && find $(lintable) -name *.py | xargs \
+	pylint --rcfile ./.pylintrc -d missing-docstring -d line-too-long -d invalid-name -d redefined-outer-name
 
 .PHONY: pep8
 pep8: ve
-	. ve/bin/activate && find $(lintable) -name *.py | xargs pep8 --max-line-length=100
+	. ve/bin/activate && find $(lintable) -name *.py | xargs pep8 --max-line-length=110
 
 .PHONY: run
 run: ve
