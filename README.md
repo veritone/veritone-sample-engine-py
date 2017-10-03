@@ -1,4 +1,4 @@
-# vda-sample-engine-py
+# veritone-sample-engine-py
 
 This project demonstrates how to create an engine using Python for running on Veritone's platform.
 
