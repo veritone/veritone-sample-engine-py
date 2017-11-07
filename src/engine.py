@@ -23,8 +23,11 @@ def load_payload(payload_raw):
 
 def encode_transcript(transcript):
     lines = transcript['tt']['body']['div']['p']
-    for line in lines:
-        line['#text'] = encode_morse(line['#text'])
+    if isinstance(lines, dict):
+        lines['#text'] = encode_morse(lines['#text'])
+    else:
+        for line in lines:
+            line['#text'] = encode_morse(line['#text'])
 
     if 'head' in transcript['tt'] and 'metadata' in transcript['tt']['head']:
         del transcript['tt']['head']['metadata']
@@ -35,16 +38,16 @@ def run(payload_arg):
         payload = load_payload(payload_file.read())
         client = APIClient(payload['token'])
 
-        recording = client.get_recording(payload['recordingId'])
-        if recording is None or 'transcriptAsset' not in recording:
+        client.update_task(payload['jobId'], payload['taskId'], 'running')
+
+        recording = client.get_recording(payload['recordingId'], 'transcript')
+        if recording is None:
             print('Error loading transcript asset from recording')
             client.update_task(payload['jobId'], payload['taskId'], 'failed')
             return False
 
-        client.update_task(payload['jobId'], payload['taskId'], 'running')
-
-        transcript_asset = recording['transcriptAsset']
-        transcript = get_transcript(transcript_asset['_uri'])
+        oldestAsset = min(recording['assets'], key=lambda asset: asset['createdDateTime'])
+        transcript = get_transcript(oldestAsset['uri'])
 
         encode_transcript(transcript)
         success = client.save_transcript(payload['recordingId'], transcript)
@@ -56,9 +59,6 @@ def run(payload_arg):
             client.update_task(payload['jobId'], payload['taskId'], 'complete')
 
         return success
-
-    return False
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Veritone Developer sample python engine - Morse encoder')
