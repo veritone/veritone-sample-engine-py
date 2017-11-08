@@ -1,9 +1,11 @@
 import json
-import urllib.parse
 import requests
 import xmltodict
+from gql import gql, Client
+from gql.transport.requests import RequestsHTTPTransport
+from http import HTTPStatus
 
-API_URL = 'https://api.veritone.com/v1/'
+GRAPHQL_URL = 'https://api.veritone.com/v3/graphql'
 VALID_TASK_STATUS = ['running', 'complete', 'failed']
 DEFAULT_REQUEST_TIMEOUT = 5000
 
@@ -24,55 +26,91 @@ class APIClient(object):
             return super(APIClient, cls).__new__(cls)
 
     def __init__(self, token):
-        self.token = token
-        self.url = API_URL
-        self.header = {
-            'Authorization': 'Bearer %s' % self.token,
+        self.headers = {
+            'Authorization': 'Bearer %s' % token,
         }
+        transport = RequestsHTTPTransport(GRAPHQL_URL, headers=self.headers,
+                                          use_json=True, timeout=DEFAULT_REQUEST_TIMEOUT)
+        self.client = Client(transport=transport, fetch_schema_from_transport=True)
 
-    def get_recording(self, recording_id):
-        url = urllib.parse.urljoin(self.url, 'recording/{}'.format(recording_id))
-        response = requests.get(url, headers=self.header, timeout=DEFAULT_REQUEST_TIMEOUT)
-        if response.status_code != 200:
+    def get_recording(self, recording_id, asset_type):
+        query = gql('''
+            query{
+              temporalDataObject(id:"%s"){
+                assets(assetType:"%s") {
+                  records  {
+                    id
+                    contentType
+                    createdDateTime
+                    uri
+                  }
+                }
+              }
+            }
+            ''' % (recording_id, asset_type))
+        try:
+            response = self.client.execute(query)
+            return {
+                'assets': response['temporalDataObject']['assets']['records']
+            }
+        except Exception as e:
+            print('Failed to find {} for recording_id {} due to: {}'.format(asset_type, recording_id, e))
             return None
 
-        return json.loads(response.text)
-
     def save_transcript(self, recording_id, transcript):
-        content = xmltodict.unparse(transcript, pretty=True)
+        filename = 'output.xml'
 
-        headers = {
-            'X-Veritone-Asset-Type': 'morse',
-            'Content-Type': 'application/ttml+xml',
-            'Authorization': 'Bearer %s' % self.token,
+        query = '''
+            mutation {
+              createAsset(
+                input: {
+                    containerId: "%s",
+                    contentType: "application/ttml+xml",
+                    assetType: "morse"
+                }) {
+                id
+                uri
+              }
+            }
+            ''' % recording_id
+
+        data = {
+            'query': query,
+            'filename': filename
         }
 
-        url = urllib.parse.urljoin(self.url, 'recording/{}/asset'.format(recording_id))
-        response = requests.post(url, headers=headers, data=content, timeout=DEFAULT_REQUEST_TIMEOUT)
-        if response.status_code != 200:
-            print(response.status_code)
+        files = {
+            'file': (filename, xmltodict.unparse(transcript, pretty=True))
+        }
+
+        try:
+            response = requests.post(GRAPHQL_URL, data=data, files=files, headers=self.headers)
+            return response.status_code == HTTPStatus.OK
+        except Exception as e:
+            print('Failed to create asset for recording: {} due to: {}'.format(recording_id, e))
             return False
-        return True
 
     def update_task(self, job_id, task_id, status, output=None):
         if status not in VALID_TASK_STATUS:
             return False
-        body = {
-            'taskStatus': status,
-        }
 
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer %s' % self.token,
-        }
-        if output is not None:
-            body['output'] = output
-        url = urllib.parse.urljoin(self.url, 'job/{}/task/{}'.format(job_id, task_id))
-        response = requests.put(url, headers=headers, data=json.dumps(body), timeout=DEFAULT_REQUEST_TIMEOUT)
-        if response.status_code != 204:
-            print('Failed to update task to {}'.format(status))
-            print(response.text)
-            print(response.status_code)
+        if output is None:
+            output = {}
+
+        query = gql('''
+            mutation {
+              updateTask(input: {id: "%s", jobId: "%s", status: %s, output: %s}) {
+                output
+                taskOutput
+                taskPayload
+                payload
+                status
+                id
+              }
+            }
+        ''' % (task_id, job_id, status, json.dumps(output)))
+        try:
+            self.client.execute(query)
+        except Exception as e:
+            print('Failed to update task {} status to {} due to: {}'.format(task_id, status, e))
             return False
-
-        return True

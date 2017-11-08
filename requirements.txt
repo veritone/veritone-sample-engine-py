@@ -1,4 +1,5 @@
 pep8==1.7.0
 pylint==1.7.1
-requests==2.13.0
+requests==2.18.0
 xmltodict==0.11.0
+gql==0.1.0
