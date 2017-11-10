@@ -3,7 +3,7 @@ import urllib.parse
 import requests
 import xmltodict
 
-API_URL = 'https://api.veritone.com/v1/'
+API_URL = 'https://api.aws-dev.veritone.com/v1/'
 VALID_TASK_STATUS = ['running', 'complete', 'failed']
 DEFAULT_REQUEST_TIMEOUT = 5000
 

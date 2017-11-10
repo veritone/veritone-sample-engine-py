@@ -23,8 +23,11 @@ def load_payload(payload_raw):
 
 def encode_transcript(transcript):
     lines = transcript['tt']['body']['div']['p']
-    for line in lines:
-        line['#text'] = encode_morse(line['#text'])
+    if '#text' in lines:
+        lines['#text'] = encode_morse(lines['#text'])
+    else:
+        for line in lines:
+            line['#text'] = encode_morse(line['#text'])
 
     if 'head' in transcript['tt'] and 'metadata' in transcript['tt']['head']:
         del transcript['tt']['head']['metadata']

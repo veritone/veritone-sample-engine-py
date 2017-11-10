@@ -1,5 +1,5 @@
 {
-	"engineId" : "3861d2c3-0467-4e95-9407-c6b5259d275f",
+	"engineId" : "7e1a7e8d-bdd0-476c-8b48-34458c4a57bb",
 	"url": "https://gist.github.com/ebuckley/1842461",
 	"category": "translation",
 	"externalCalls": [],
@@ -7,7 +7,7 @@
 	"outputFormats": [
 			"application/ttml+xml"
 	],
-	"clusterSize": "small",
+	"clusterSize": "large",
 	"intialConcurrency": 50,
 	"maxConcurrency": 50
 }
