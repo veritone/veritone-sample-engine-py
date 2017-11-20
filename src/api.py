@@ -100,12 +100,8 @@ class APIClient(object):
         query = gql('''
             mutation {
               updateTask(input: {id: "%s", jobId: "%s", status: %s, output: %s}) {
-                output
-                taskOutput
-                taskPayload
-                payload
-                status
                 id
+                status
               }
             }
         ''' % (task_id, job_id, status, json.dumps(output)))
