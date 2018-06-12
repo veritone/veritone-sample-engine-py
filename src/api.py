@@ -74,7 +74,7 @@ class APIClient(object):
                     contentType: "%s"
                 }) {
                 id
-                uri
+                sigendUri
               }
             }
             ''' % (recording_id, assetType, contentType)

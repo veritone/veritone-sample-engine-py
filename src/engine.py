@@ -65,8 +65,7 @@ def run(payload_arg):
         recording = client.get_recording(payload['recordingId'], json.dumps(['text','transcript']))
 
         if recording is None or not recording['assets']:
-            print('Error loading asset for the recordingId: {}'.format(payload['recordingId']))
-            print('Expected asset with contentType of "text/plain" or "application/ttml+xml"')
+            print('Error loading asset for the recordingId: {}\nExpected asset with contentType of "text/plain" or "application/ttml+xml"'.format(payload['recordingId']))
             client.update_task(payload['jobId'], payload['taskId'], 'failed')
             return False
 
