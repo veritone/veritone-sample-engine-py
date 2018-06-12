@@ -5,7 +5,6 @@ from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 from http import HTTPStatus
 
-GRAPHQL_URL = 'https://api.veritone.com/v3/graphql'
 VALID_TASK_STATUS = ['running', 'complete', 'failed']
 DEFAULT_REQUEST_TIMEOUT = 5000
 
@@ -15,21 +14,21 @@ def get_transcript(uri):
     if response.status_code != 200:
         return None
 
-    return xmltodict.parse(response.text)
-
+    return response.text
 
 class APIClient(object):
-    def __new__(cls, token):
+    def __new__(cls, baseUrl, token):
         if token is None:
             raise ValueError
         else:
             return super(APIClient, cls).__new__(cls)
 
-    def __init__(self, token):
+    def __init__(self, baseUrl, token):
+        self.base_url = baseUrl + '/v3/graphql'
         self.headers = {
             'Authorization': 'Bearer %s' % token,
         }
-        transport = RequestsHTTPTransport(GRAPHQL_URL, headers=self.headers,
+        transport = RequestsHTTPTransport(self.base_url, headers=self.headers,
                                           use_json=True, timeout=DEFAULT_REQUEST_TIMEOUT)
         self.client = Client(transport=transport, fetch_schema_from_transport=True)
 
@@ -37,12 +36,13 @@ class APIClient(object):
         query = gql('''
             query{
               temporalDataObject(id:"%s"){
-                assets(assetType:"%s") {
+                assets(assetType:%s) {
                   records  {
                     id
+                    assetType
                     contentType
                     createdDateTime
-                    uri
+                    signedUri
                   }
                 }
               }
@@ -57,22 +57,27 @@ class APIClient(object):
             print('Failed to find {} for recording_id {} due to: {}'.format(asset_type, recording_id, e))
             return None
 
-    def save_transcript(self, recording_id, transcript):
-        filename = 'output.xml'
+    def save_transcript(self, recording_id, assetType, contentType, transcript):
+        if assetType == 'text':
+            filename = 'translation.txt'
+            file_content = transcript
+        else:
+            filename = 'translation.ttml'
+            file_content = xmltodict.unparse(transcript, pretty=True)
 
         query = '''
             mutation {
               createAsset(
                 input: {
                     containerId: "%s",
-                    contentType: "application/ttml+xml",
-                    assetType: "morse"
+                    assetType: "%s",
+                    contentType: "%s"
                 }) {
                 id
-                uri
+                signedUri
               }
             }
-            ''' % recording_id
+            ''' % (recording_id, assetType, contentType)
 
         data = {
             'query': query,
@@ -80,11 +85,11 @@ class APIClient(object):
         }
 
         files = {
-            'file': (filename, xmltodict.unparse(transcript, pretty=True))
+            'file': (filename, file_content)
         }
 
         try:
-            response = requests.post(GRAPHQL_URL, data=data, files=files, headers=self.headers)
+            response = requests.post(self.base_url, data=data, files=files, headers=self.headers)
             return response.status_code == HTTPStatus.OK
         except Exception as e:
             print('Failed to create asset for recording: {} due to: {}'.format(recording_id, e))
