@@ -3,9 +3,14 @@
 	"url": "https://gist.github.com/ebuckley/1842461",
 	"category": "translation",
 	"externalCalls": [],
-	"preferredInputFormat": "application/ttml+xml",
+	"preferredInputFormat": "text/plain",
+	"supportedInputFormats": [
+		"text/plain",
+		"application/ttml+xml"
+	],
 	"outputFormats": [
-			"application/ttml+xml"
+		"text/plain",
+		"application/ttml+xml"
 	],
 	"clusterSize": "small",
 	"intialConcurrency": 50,

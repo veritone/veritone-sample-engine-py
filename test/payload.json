@@ -1,7 +1,7 @@
 {
-	"applicationId": "fb741454-1ef2-4130-a65d-0a831443f675",
-	"jobId": "0",
-	"taskId": "0.1",
-	"recordingId": "14890252",
-	"token": "replace-me"
+	"jobId": "<enter job_id here>",
+	"token": "<enter token here>",
+	"taskId": "<enter task_id here>",
+	"recordingId": "<enter recording_id here>",
+	"veritoneApiBaseUrl": "https://api.veritone.com"
 }
