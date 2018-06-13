@@ -57,7 +57,7 @@ class APIClient(object):
             print('Failed to find {} for recording_id {} due to: {}'.format(asset_type, recording_id, e))
             return None
 
-    def save_transcript(self, recording_id, assetType, contentType, transcript):
+    def save_transcript(self, recording_id, assetType, contentType, engineId, language, transcript):
         if assetType == 'text':
             filename = 'translation.txt'
             file_content = transcript
@@ -72,12 +72,17 @@ class APIClient(object):
                     containerId: "%s",
                     assetType: "%s",
                     contentType: "%s"
+                    name: "%s"
+                    jsondata:{
+                        source: "%s"
+                        language: "%s"
+                    }
                 }) {
                 id
                 signedUri
               }
             }
-            ''' % (recording_id, assetType, contentType)
+            ''' % (recording_id, assetType, contentType, filename, engineId, language)
 
         data = {
             'query': query,
