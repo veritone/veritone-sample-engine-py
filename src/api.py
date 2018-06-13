@@ -14,7 +14,7 @@ def get_transcript(uri):
     if response.status_code != 200:
         return None
 
-    return response.text
+    return response.content.decode('utf-8')
 
 class APIClient(object):
     def __new__(cls, baseUrl, token):
@@ -85,7 +85,7 @@ class APIClient(object):
         }
 
         files = {
-            'file': (filename, file_content)
+            'file': (filename, file_content.encode('utf-8'))
         }
 
         try:
