@@ -71,10 +71,10 @@ class APIClient(object):
                 input: {
                     containerId: "%s",
                     assetType: "%s",
-                    contentType: "%s"
-                    name: "%s"
+                    contentType: "%s",
+                    name: "%s",
                     jsondata:{
-                        source: "%s"
+                        source: "%s",
                         language: "%s"
                     }
                 }) {
@@ -109,7 +109,12 @@ class APIClient(object):
 
         query = gql('''
             mutation {
-              updateTask(input: {id: "%s", jobId: "%s", status: %s, output: %s}) {
+              updateTask(input: {
+                    id: "%s",
+                    jobId: "%s",
+                    status: %s,
+                    output: %s
+                }) {
                 id
                 status
               }
