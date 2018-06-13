@@ -9,6 +9,10 @@ from translator import encode_morse
 
 PAYLOAD_REQUIRED_FIELDS = ['veritoneApiBaseUrl', 'token', 'jobId', 'taskId', 'recordingId']
 PAYLOAD_ENV = 'PAYLOAD_FILE'
+ENGINE_SETTINGS = {
+    'engineId': "3861d2c3-0467-4e95-9407-c6b5259d275f",
+    'language': "morse"
+}
 
 
 def load_payload(payload_raw):
@@ -85,7 +89,8 @@ def run(payload_arg):
             client.update_task(payload['jobId'], payload['taskId'], 'failed')
             return False
 
-        success = client.save_transcript(payload['recordingId'], oldestAsset['assetType'], oldestAsset['contentType'], transcript)
+        success = client.save_transcript(payload['recordingId'], oldestAsset['assetType'], oldestAsset['contentType'], 
+                                        ENGINE_SETTINGS['engineId'], ENGINE_SETTINGS['language'], transcript)
 
         if not success:
             print('Failed to save transcript')
